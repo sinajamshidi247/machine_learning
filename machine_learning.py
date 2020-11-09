@@ -8,11 +8,12 @@ from sklearn.model_selection import cross_validate
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt 
 from matplotlib import style
+import datetime
 style.use('ggplot')
 
 
 
-df=pd.read_csv('/home/sina/Downloads/EURUSD1.csv')
+df=pd.read_csv('/home/sina/Downloads/EURUSD5 (2).csv',header=0,index_col='date',parse_dates=True)
 # print(df)
 
 df= df [['open','high','low','close','volume',]]
@@ -50,7 +51,22 @@ accuracy=clf.score(X_test,y_test)
 forecast_set=clf.predict(X_lately)
 # print(forecast_set, accuracy,forecast_out)
 #print(forecast_set,accuracy)
-
-print(forecast_set[-10:])
-print('-----------------------',forecast_out)
-print(accuracy)
+df['forecast']=np.nan
+# print(forecast_set[-10:])
+# print('-----------------------',forecast_out)
+# print(accuracy)
+last_date=df.iloc[-1].name
+last_unix= last_date.timestamp()
+one_day=86400
+next_unix=last_unix + one_day
+for i in forecast_set:
+    next_date=datetime.datetime.fromtimestamp(next_unix)
+    next_unix += one_day 
+    df.loc[next_date]=[np.nan for _ in range(len(df.columns)-1)] +[i]
+print(df.tail())
+# df['close'].plot()
+# df['forecast'].plot()
+# plt.legend(loc=4)
+# plt.xlabel('date')
+# plt.ylabel('price')
+# plt.show()
